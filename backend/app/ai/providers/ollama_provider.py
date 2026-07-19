@@ -46,14 +46,16 @@ class OllamaProvider(AIProvider):
                 {"role": "user", "content": user_prompt},
             ],
             "stream": False,
-            "options": {
-                "temperature": 0.2,
-            },
             "format": "json",
+            "options": {
+                "temperature": 0.1,
+                "num_ctx": 4096,
+                "num_predict": 2048,
+            },
         }
 
         try:
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with httpx.AsyncClient(timeout=300.0) as client:
                 response = await client.post(
                     f"{self.base_url}/api/chat",
                     json=payload,
@@ -79,7 +81,7 @@ class OllamaProvider(AIProvider):
             
             payload["messages"][1]["content"] = stricter_user_prompt
 
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with httpx.AsyncClient(timeout=300.0) as client:
                 response = await client.post(
                     f"{self.base_url}/api/chat",
                     json=payload,
