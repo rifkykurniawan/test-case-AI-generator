@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { generateTestCases } from './api';
+import { generateTestCases, saveTestCasesAsMarkdown } from './api';
 import './index.css';
 
 function App() {
@@ -7,6 +7,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [testCases, setTestCases] = useState([]);
+  
+  const [filename, setFilename] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState(null);
+  const [saveError, setSaveError] = useState(null);
 
   const handleGenerate = async () => {
     if (!requirement.trim()) {
@@ -29,6 +34,26 @@ function App() {
       setError(err.message || 'An error occurred while generating test cases.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!filename.trim()) {
+      setSaveError('Please enter a filename.');
+      return;
+    }
+
+    setSaving(true);
+    setSaveError(null);
+    setSaveMessage(null);
+
+    try {
+      const response = await saveTestCasesAsMarkdown(filename, requirement, testCases);
+      setSaveMessage(response.message || 'Successfully saved!');
+    } catch (err) {
+      setSaveError(err.message || 'An error occurred while saving.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -79,6 +104,35 @@ function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+          
+          <div className="glass-card save-section" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1.2rem', color: 'var(--text-color)' }}>Save as Markdown</h3>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="e.g., login_tests"
+                value={filename}
+                onChange={(e) => setFilename(e.target.value)}
+                disabled={saving}
+                style={{ 
+                  flex: 1, 
+                  background: 'var(--input-bg)', 
+                  border: '1px solid var(--card-border)', 
+                  borderRadius: '0.75rem', 
+                  padding: '1rem', 
+                  color: 'var(--text-color)',
+                  fontSize: '1rem',
+                  outline: 'none'
+                }}
+              />
+              <span style={{ color: 'var(--text-color)' }}>.md</span>
+              <button onClick={handleSave} disabled={saving || !filename.trim()}>
+                {saving ? 'Saving...' : 'Save File'}
+              </button>
+            </div>
+            {saveError && <div className="error-message">{saveError}</div>}
+            {saveMessage && <div style={{ color: 'var(--success-color)', padding: '0.5rem 0' }}>{saveMessage}</div>}
           </div>
         </div>
       )}
