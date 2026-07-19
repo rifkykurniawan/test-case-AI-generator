@@ -14,8 +14,10 @@ class Settings(BaseSettings):
     APP_NAME: str = "Test Case AI Generator"
     APP_ENV: Literal["development", "production", "testing"] = "development"
     LOG_LEVEL: str = "INFO"
+    AI_PROVIDER: Literal["gemini", "ollama"] = "ollama"
     GEMINI_API_KEY: str = ""
-    MODEL_NAME: str = "gemini-2.0-flash"
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    MODEL_NAME: str = "qwen2.5:3b"  # Default local model
     HOST: str = "0.0.0.0"
     PORT: int = 8000
 
