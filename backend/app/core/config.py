@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     APP_ENV: Literal["development", "production", "testing"] = "development"
     LOG_LEVEL: str = "INFO"
     GEMINI_API_KEY: str = ""
-    MODEL_NAME: str = "gemini-2.5-flash"
+    MODEL_NAME: str = "gemini-2.0-flash"
     HOST: str = "0.0.0.0"
     PORT: int = 8000
 

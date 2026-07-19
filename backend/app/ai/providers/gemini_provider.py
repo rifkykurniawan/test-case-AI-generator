@@ -17,7 +17,7 @@ class GeminiProvider(AIProvider):
         if not api_key:
             logger.warning("GEMINI_API_KEY is not set. Gemini API calls will fail.")
         self.api_key = api_key
-        self.model_name = model_name or "gemini-2.5-flash"
+        self.model_name = model_name or "gemini-2.0-flash"
         # Initialize GenAI Client
         self.client = genai.Client(api_key=self.api_key)
 
