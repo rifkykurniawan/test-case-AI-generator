@@ -9,7 +9,7 @@ class GenerateRequest(BaseModel):
         min_length=10,
         description="The software requirement to analyze and generate test cases for.",
         examples=[
-            "As a user, I want to be able to sign up using my email and password so that I can access the app."
+            "I have login feature, login with username and password. Create test cases"
         ],
     )
 
