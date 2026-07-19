@@ -33,9 +33,6 @@ class TestGenerator:
         # 2. Build user prompt
         user_prompt = build_user_prompt(requirement)
 
-        logger.info("System prompt length: {}", len(system_prompt))
-        logger.info("User prompt length: {}", len(user_prompt))
-
         # 3. Call provider
         logger.info("Executing generation request via AI Provider...")
         try:

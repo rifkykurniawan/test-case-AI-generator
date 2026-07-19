@@ -6,36 +6,16 @@ async def test_export_success(client: AsyncClient):
     payload = {
         "requirement": "As a user, I want to sign up.",
         "generated": {
-            "summary": {
-                "feature": "Sign Up Feature",
-                "description": "User Sign Up Requirement",
-            },
-            "analysis": {
-                "functionalRequirements": ["Require email verification"],
-                "validationRules": ["Valid email address only"],
-            },
             "testCases": [
                 {
                     "id": "TC-001",
-                    "title": "Registration test",
-                    "priority": "High",
-                    "type": "Positive",
-                    "precondition": "User on sign up page",
-                    "steps": ["Step 1", "Step 2"],
-                    "expectedResult": "Success",
-                }
-            ],
-            "edgeCases": [
+                    "title": "Valid login with correct username and password"
+                },
                 {
-                    "id": "EC-001",
-                    "title": "Empty fields",
-                    "priority": "Medium",
-                    "type": "Negative",
-                    "precondition": "User on sign up page",
-                    "steps": ["Step 1"],
-                    "expectedResult": "Error message",
+                    "id": "TC-002",
+                    "title": "Login with incorrect password"
                 }
-            ],
+            ]
         },
     }
 

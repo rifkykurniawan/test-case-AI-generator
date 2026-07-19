@@ -14,16 +14,29 @@ class OllamaProvider(AIProvider):
         self.base_url = base_url or "http://localhost:11434"
         self.model_name = model_name or "qwen3:4b"
 
+    def _clean_text(self, text: str) -> str:
+        """Robustly extracts and cleans JSON content from the response text."""
+        cleaned = text.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned[7:]
+        elif cleaned.startswith("```"):
+            cleaned = cleaned[3:]
+        if cleaned.endswith("```"):
+            cleaned = cleaned[:-3]
+        cleaned = cleaned.strip()
+
+        # Extract JSON object if there's surrounding text (like thinking blocks)
+        if not (cleaned.startswith("{") or cleaned.startswith("[")):
+            start = cleaned.find("{")
+            end = cleaned.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                cleaned = cleaned[start : end + 1]
+        return cleaned
+
     def _is_valid_response(self, text: str) -> bool:
         """Checks if the output text is valid JSON and conforms to the response model."""
         try:
-            cleaned = text.strip()
-            if cleaned.startswith("```json"):
-                cleaned = cleaned[7:]
-            if cleaned.endswith("```"):
-                cleaned = cleaned[:-3]
-            cleaned = cleaned.strip()
-
+            cleaned = self._clean_text(text)
             data = json.loads(cleaned)
             GenerateResponse.model_validate(data)
             return True
@@ -46,7 +59,6 @@ class OllamaProvider(AIProvider):
                 {"role": "user", "content": user_prompt},
             ],
             "stream": False,
-            "format": "json",
             "options": {
                 "temperature": 0.1,
                 "num_ctx": 4096,
@@ -67,10 +79,10 @@ class OllamaProvider(AIProvider):
                 raw_text = res_data.get("message", {}).get("content", "")
 
             if self._is_valid_response(raw_text):
-                return raw_text
+                return self._clean_text(raw_text)
 
             logger.warning(
-                "Initial Ollama response was invalid. Retrying with a stricter instruction..."
+                "Initial Ollama response was invalid. Retrying with a stricter instruction and removing format constraint..."
             )
             stricter_user_prompt = (
                 f"{user_prompt}\n\n"
@@ -80,6 +92,9 @@ class OllamaProvider(AIProvider):
             )
             
             payload["messages"][1]["content"] = stricter_user_prompt
+            # Remove format constraint on retry to support reasoning/thinking models
+            if "format" in payload:
+                del payload["format"]
 
             async with httpx.AsyncClient(timeout=300.0) as client:
                 response = await client.post(
@@ -90,7 +105,7 @@ class OllamaProvider(AIProvider):
                 res_data = response.json()
                 raw_text_retry = res_data.get("message", {}).get("content", "")
 
-            return raw_text_retry
+            return self._clean_text(raw_text_retry)
 
         except httpx.HTTPStatusError as e:
             logger.error("Ollama HTTP Error: {}", str(e))
@@ -101,3 +116,4 @@ class OllamaProvider(AIProvider):
         except Exception as e:
             logger.error("Error during Ollama generation: {}", str(e))
             raise AIProviderError(f"Ollama generation failed: {str(e)}")
+

@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/v1")
 @router.post(
     "/export",
     summary="Export Test Cases to Excel",
-    description="Accepts generated JSON data and returns an Excel spreadsheet containing worksheets for requirement, analysis, test cases, and edge cases.",
+    description="Accepts generated JSON data and returns an Excel spreadsheet containing the test cases.",
 )
 async def export_to_excel(
     payload: ExportRequest,
