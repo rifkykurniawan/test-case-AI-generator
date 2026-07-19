@@ -108,3 +108,11 @@ cd backend
 docker build -t test-case-generator-backend .
 docker run -p 8000:8000 --env-file .env test-case-generator-backend
 ```
+
+## Features
+
+### Save to Markdown
+You can save your generated test cases directly to a Markdown (`.md`) file on your local filesystem.
+- In the frontend UI, after generating test cases, scroll down to the "Save as Markdown" section.
+- Enter a desired filename (e.g., `login_tests`) and click **Save File**.
+- The file will be saved in the `test-cases/` directory at the root level of this project.
