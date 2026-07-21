@@ -1,5 +1,7 @@
 # Test Case AI Generator
 
+![App Screenshot](./documents/ss.jpg)
+
 This project is an AI-powered Test Case Generator that translates software requirements into structured test cases and edge cases. It consists of a Python backend utilizing FastAPI and a modern React frontend utilizing Vite.
 
 ## Project Structure
